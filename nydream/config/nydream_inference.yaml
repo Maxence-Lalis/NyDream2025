@@ -1,0 +1,38 @@
+# ==== GLOBAL ====
+model: "nydream"
+mode: "inference"
+tag: "testset"
+runs: [0,1,2,3,4]
+
+chkpt_dir_init: "/home/maxence/Documents/NyCode/Checkpoints/nydream/nydream_train_smote_nophaseA_20251105_160244"  
+save_dir_init: "/home/maxence/Documents/NyCode/Data/"
+# -------------------------
+# Data & featurization
+# -------------------------
+Test_data_full_train: "/home/maxence/Documents/NyDREAM2025/matej_tests/final_submission/final_submission/test_set_prepped.csv"
+Test_data_train: null
+Test_data_valid: null 
+Test_data_test: /home/maxence/Documents/NyDREAM2025/matej_tests/final_submission/final_submission/test_set_prepped.csv
+Test_data_exclude: null
+
+Test_data_smiles: IsomericSMILES
+Test_data_label: LABEL_clean_descriptors_CMJ20230309
+Test_data_id: stimulus
+Test_conc_column: logM
+
+Test_data_sep: ;
+Test_mode: "inference"         
+Test_norm_method: null   
+
+Test_init_globals: true
+
+# -------------------------
+# Loader / device
+# -------------------------
+Test_batch_size: 64
+Test_device: "cuda:0"           # or "cpu"
+
+# -------------------------
+# Checkpoints & phases
+# -------------------------
+Phase_to_predict: ["A", "B", "C"] 

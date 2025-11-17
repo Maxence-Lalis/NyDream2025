@@ -1,0 +1,200 @@
+# ==== GLOBAL ====
+model: "nydream"
+mode: "train"
+tag: "test"
+runs: [0,1,2,3,4]
+
+# -----------------------
+# Shared / global
+# -----------------------
+save_dir_init: ../checkpoints/
+use_existing:  ../checkpoints/nydream/nydream_train_test_intensity_20251104_160110/run_0
+PhaseA_device: cuda                
+PhaseB_device: cuda
+PhaseC_device: cuda
+
+PhaseA_save_dir: null
+PhaseB_save_dir: null
+PhaseC_save_dir: null
+
+# -----------------------
+# Phase A
+# -----------------------
+
+# ==== DATA ====
+phaseA_data_full_train:  ../rawdata/full_data_ec50_compatible.csv
+phaseA_data_smiles: IsomericSMILES
+phaseA_data_label: LABEL_clean_descriptors_CMJ20230309
+phaseA_data_id: CID
+phaseA_data_sep: ";"
+phaseA_conc_column: null
+mode: train            
+phaseA_data_train: null
+phaseA_data_valid: null
+phaseA_data_test: null
+phaseA_data_exclude: null
+
+phaseA_custom_split: false
+phaseA_init_globals: true # Use EC50 when false
+PhaseA_monitor_scope: macro_avg
+
+phaseA_train_batch_size: 1024
+phaseA_valid_batch_size: 1024
+
+graphnet_hidden_dims: 256
+graphnet_depth: 3
+graphnet_dropout: 0.15
+
+phaseA_data_label_size: 48
+
+phaseA_train_learning_rate: 0.0001
+phaseA_early_stop_patience: 200
+phaseA_mode_patience: maximize
+phaseA_early_min_delta: 0.0
+
+phaseA_loss_fn: BCEWithLogitsLoss
+phaseA_metric_fn: multilabel_metrics
+phaseA_monitor_metric: multilabel_f1
+phaseA_num_epochs: 2
+
+# -----------------------
+# Phase B
+# -----------------------
+
+# ==== DATA ====
+PhaseB_data_full_train: "../rawdata/dream_all_with_dilution_very_good_intensity.csv"
+PhaseB_data_smiles: IsomericSMILES
+PhaseB_data_label: SAMPLE_WEIGHT_DREAM
+PhaseB_data_id: id
+PhaseB_data_sep: ";"
+phaseB_conc_column: logM 
+PhaseB_mode: train
+PhaseB_data_train: 
+PhaseB_data_valid: 
+PhaseB_data_test: null
+PhaseB_data_exclude: null
+norm_method: minmax
+normalize_labels: false
+
+PhaseB_custom_split: false 
+PhaseB_init_globals: false # Use EC50 when false
+PhaseB_monitor_scope: macro_avg
+
+phaseB_valid_size: 0.2  # Not defined if dup_stratified
+phaseB_test_size: 0.0  # Percentage out of valid
+phaseB_split_strategy: dup_stratified
+phaseB_dup_test_frac: 0.7
+phaseB_dup_n_bins: 10
+
+# ==== Model ====
+PhaseB_train_batch_size: 52
+PhaseB_train_learning_rate: 0.0001
+PhaseB_weight_decay: 0.00001
+PhaseB_early_stop_patience: 200
+PhaseB_mode_patience: maximize
+PhaseB_early_min_delta: 0.0
+
+PhaseB_loss_fn1: BCEWithLogitsLoss 
+PhaseB_loss_fn2: HuberLoss
+PhaseB_metric_fn: multilabel_metrics
+monitor_metric: multilabel_pearson
+
+PhaseB_num_epochs: 2000
+PhaseB_lambda_val: 100
+
+PhaseB_data_label_size: 51
+
+# -----------------------
+# Phase C
+# -----------------------
+PhaseC_panel:
+  POM:
+    csv: "../rawdata/pom_data_dilution_intensity.csv"
+    smiles_col: "IsomericSMILES"
+    label_col: "SAMPLE_WEIGHT_DREAM"
+    id_col: "id"
+    conc_col: 'logM'
+    out_dim: 55
+    save_dir:
+    sep: ";"
+    mode: "train"
+    train_path: null
+    valid_path: null
+    test_path: null
+    exclude_path: null
+    normalize_labels: false
+    norm_method: minmax
+    custom_split: false
+    valid_size: 0.2
+    test_size: 0.0
+    split_strategy: dup_stratified
+    dup_test_frac: 0.0
+    dup_n_bins: 10
+    batch_size: 256
+
+
+  KELLER:
+    csv: "../rawdata/keller_data_dilution_intensity_ec50.csv"
+    smiles_col: "IsomericSMILES"
+    label_col: "SAMPLE_WEIGHT_DREAM"
+    id_col: "id"
+    conc_col: 'logM'
+    out_dim: 20
+    save_dir:    #CHANGE
+    sep: ";"
+    mode: "train"
+    train_path: null
+    valid_path: null
+    test_path: null
+    exclude_path: null
+    normalize_labels: false
+    norm_method: minmax
+    custom_split: false
+    valid_size: 0.2
+    test_size: 0.0
+    split_strategy: dup_stratified
+    dup_test_frac: 0.2
+    dup_n_bins: 10
+    batch_size: 256
+
+  DREAM:
+    # csv: "/home/maxence/Documents/Nylix/Script/CC_encoder_dilution/dream_all_with_dilution_ec50_compatible_all.csv"
+    csv: "../rawdata/dream_all_with_dilution_very_good_intensity_with_leaderboard.csv"
+    smiles_col: "IsomericSMILES"
+    label_col: "SAMPLE_WEIGHT_DREAM"
+    id_col: "id"
+    conc_col: 'logM'
+    out_dim: 51
+    save_dir: #CHANGE
+    sep: ";"
+    mode: "train"
+    train_path: null
+    valid_path: null
+    test_path: null
+    exclude_path: null 
+    normalize_labels: false
+    norm_method: minmax
+    custom_split: false
+    valid_size: 0.2
+    test_size: 0.0
+    split_strategy: dup_stratified
+    dup_test_frac: 0.0
+    dup_n_bins: 10
+    batch_size: 256
+
+# ==== Model ====
+
+PhaseC_init_globals: true # Use EC50 when false
+PhaseC_monitor_scope: global_micro
+
+PhaceC_batch_size: 256
+PhaseC_dropout: 0.2
+PhaseC_lr: 0.0001
+PhaseC_weight_decay: 0.00001
+PhaseC_patience: 200
+PhaseC_loss_fn1: MSE
+PhaseC_metric_fn: multilabel_metrics
+PhaseC_monitor_metric: sample_pearson  
+PhaseC_num_epochs: 2000
+PhaseC_lambda_val: 0.0
+PhaseC_early_min_delta: 0.0
